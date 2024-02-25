@@ -1,1 +1,4 @@
-/vendor
+vendor/*
+ssoService
+logs/*
+env.toml
