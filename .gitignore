@@ -1,4 +1,4 @@
 vendor/*
 ssoService
-logs/*
+logs/*.log
 env.toml
