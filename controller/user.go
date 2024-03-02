@@ -14,17 +14,7 @@ import (
 	"time"
 )
 
-var jwtKey = []byte("my_secret_key")
-
-type Credentials struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type Claims struct {
-	Username string `json:"username"`
-}
-
+// 注册接口
 func Register(c *gin.Context) {
 	// 初始化 RegisterForm 结构体
 	registerParams := forms.RegisterForm{}
@@ -78,6 +68,7 @@ func Register(c *gin.Context) {
 	return
 }
 
+// 登录接口
 func Login(c *gin.Context) {
 	// 初始化 RegisterForm 结构体
 	loginParams := forms.LoginForm{}
@@ -144,6 +135,7 @@ func HandleUserModelToMap(user *model.User) map[string]interface{} {
 	userItemMap := map[string]interface{}{
 		"id":       user.ID,
 		"username": user.Name,
+		"head_url": user.HeadUrl,
 		"email":    user.Email,
 	}
 	return userItemMap
