@@ -96,7 +96,8 @@ func Login(c *gin.Context) {
 
 // 用户信息
 func UserInfo(c *gin.Context) {
-	token := c.Request.Header.Get("x-token")
+	cookie, _ := c.Request.Cookie("x-token")
+	token := cookie.Value
 	j := middlewares.NewJWT()
 	claims, err := j.ParseToken(token)
 	if err != nil {
@@ -115,9 +116,9 @@ func UserInfo(c *gin.Context) {
 
 // 发送邮箱验证码
 func SendValidateCode(c *gin.Context) {
-	// 发送邮件
 	email := c.Query("email")
 	emails := []string{email}
+	// 发送邮件
 	vCode, err := utils.SendEmailValidate(emails)
 	if err != nil {
 		response.Err(c, 200, 500, "验证码发送失败", err.Error())
@@ -139,4 +140,17 @@ func HandleUserModelToMap(user *model.User) map[string]interface{} {
 		"email":    user.Email,
 	}
 	return userItemMap
+}
+
+// 获取临时授权码
+func CreateCode(c *gin.Context) {
+	cookie, _ := c.Request.Cookie("x-token")
+	token := cookie.Value
+	code := utils.GenerateCode()
+
+	// code存入redis，有效期5分钟
+	global.Redis.Set(token, code, time.Minute)
+
+	response.Success(c, 200, "success", code)
+
 }

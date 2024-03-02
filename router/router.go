@@ -13,5 +13,6 @@ func AccountRouter(Router *gin.RouterGroup) {
 		AccountRouter.POST("register", controller.Register)
 		AccountRouter.POST("login", controller.Login)
 		AccountRouter.GET("user", middlewares.JWTAuth(), controller.UserInfo)
+		AccountRouter.POST("create_code", middlewares.JWTAuth(), controller.CreateCode)
 	}
 }

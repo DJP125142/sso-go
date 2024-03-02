@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -28,6 +29,7 @@ func GetNowFormatTodayTime() string {
 	return formattedTime
 }
 
+// 获取当前时间戳的格式
 func GetNowFormatTime() string {
 	now := time.Now()
 	format := "2006-01-02 15:04:05"
@@ -131,6 +133,7 @@ func SendEmailValidate(em []string) (string, error) {
 	return vCode, err
 }
 
+// 生成jwt的token
 func CreateToken(c *gin.Context, Id uint, NickName string, Email string) string {
 	//生成token信息
 	j := middlewares.NewJWT()
@@ -141,7 +144,7 @@ func CreateToken(c *gin.Context, Id uint, NickName string, Email string) string 
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix(),
 			// TODO 设置token过期时间
-			ExpiresAt: time.Now().Unix() + 60*60*24*30, //token -->30天过期
+			ExpiresAt: time.Now().Unix() + 60*60*24*7, //token -->7天过期
 			Issuer:    "test",
 		},
 	}
@@ -152,4 +155,14 @@ func CreateToken(c *gin.Context, Id uint, NickName string, Email string) string 
 		return ""
 	}
 	return token
+}
+
+// 随机生成一个code码
+func GenerateCode() string {
+	token := make([]byte, 32)
+	_, err := rand.Read(token)
+	if err != nil {
+		panic(err)
+	}
+	return base64.URLEncoding.EncodeToString(token)
 }
