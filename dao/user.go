@@ -24,7 +24,7 @@ func HasUser(nameOrEmail string) bool {
 }
 
 // UsernameFindUserInfo 通过username找到用户信息
-func GetUserInfoByPw(username string, password string) (*model.User, bool) {
+func GetUserInfoByPw(username string, password string) (*model.User, bool, string) {
 	var whereMap map[string]interface{}
 	if utils.IsEmail(username) {
 		whereMap = map[string]interface{}{"email": username}
@@ -33,12 +33,12 @@ func GetUserInfoByPw(username string, password string) (*model.User, bool) {
 	}
 	rows := global.DB.Limit(1).Where(whereMap).First(&user)
 	if rows.RowsAffected < 1 {
-		return &user, false
+		return &user, false, "该用户未注册"
 	}
 	// 校验密码
 	verifyPassword := utils.ComparePasswords(user.Password, password)
 	if !verifyPassword {
-		return &user, false
+		return &user, false, "密码验证失败"
 	}
-	return &user, true
+	return &user, true, "登录成功"
 }

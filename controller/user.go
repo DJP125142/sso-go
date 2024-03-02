@@ -80,9 +80,9 @@ func Login(c *gin.Context) {
 	}
 
 	// 查询是否有该用户
-	user, ok := dao.GetUserInfoByPw(loginParams.Username, loginParams.PassWord)
+	user, ok, msg := dao.GetUserInfoByPw(loginParams.Username, loginParams.PassWord)
 	if !ok {
-		response.Err(c, 401, 401, "登录失败", "")
+		response.Err(c, 401, 401, msg, "")
 		return
 	}
 
