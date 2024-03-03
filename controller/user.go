@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"net/http"
 	"sso-go/dao"
 	"sso-go/forms"
@@ -87,7 +88,7 @@ func Login(c *gin.Context) {
 	}
 
 	// 登录成功创建token
-	token := utils.CreateToken(c, user.ID, user.Name, user.Email)
+	token := utils.CreateToken(c, user.ID, user.Name, user.Email, user.HeadUrl)
 	userInfoMap := HandleUserModelToMap(user)
 	userInfoMap["token"] = token
 
@@ -96,18 +97,25 @@ func Login(c *gin.Context) {
 
 // 用户信息
 func UserInfo(c *gin.Context) {
-	cookie, _ := c.Request.Cookie("x-token")
-	token := cookie.Value
-	j := middlewares.NewJWT()
-	claims, err := j.ParseToken(token)
-	if err != nil {
+	c.Get("claims")
+	claims, exists := c.Get("claims")
+	if !exists {
+		// 如果不存在，说明中间件没有设置claims
 		response.Err(c, 401, 401, "未登录", "")
+		return
+	}
+
+	// 进行类型断言，确保 claims 的类型是 jwt.Claims
+	jwtClaims, ok := claims.(middlewares.CustomClaims)
+	if !ok {
+		response.Err(c, 401, 401, "未登录", "")
+		return
 	}
 
 	userInfo := map[string]interface{}{
-		"userId":   claims.ID,
-		"username": claims.NickName,
-		"email":    claims.Email,
+		"userId":   jwtClaims.ID,
+		"username": jwtClaims.NickName,
+		"email":    jwtClaims.Email,
 	}
 	response.Success(c, 200, "success", map[string]interface{}{
 		"userInfo": userInfo,
@@ -117,6 +125,10 @@ func UserInfo(c *gin.Context) {
 // 发送邮箱验证码
 func SendValidateCode(c *gin.Context) {
 	email := c.Query("email")
+	if utils.IsEmail(email) {
+		response.Err(c, 401, 401, "email格式错误", "")
+		return
+	}
 	emails := []string{email}
 	// 发送邮件
 	vCode, err := utils.SendEmailValidate(emails)
@@ -144,13 +156,41 @@ func HandleUserModelToMap(user *model.User) map[string]interface{} {
 
 // 获取临时授权码
 func CreateCode(c *gin.Context) {
-	cookie, _ := c.Request.Cookie("x-token")
+	cookie, _ := c.Request.Cookie("token")
 	token := cookie.Value
 	code := utils.GenerateCode()
 
-	// code存入redis，有效期5分钟
-	global.Redis.Set(token, code, time.Minute)
-
+	// code存入redis，有效期1分钟
+	global.Redis.Set(code, token, time.Minute)
 	response.Success(c, 200, "success", code)
+}
+
+// 根据code来换取token
+func GetTokenByCode(c *gin.Context) {
+	code := c.Query("code")
+	if code == "" {
+		response.Err(c, 401, 401, "code不得为空", "")
+		return
+	}
+	token := global.Redis.Get(code).Val()
+
+	// 校验token
+	j := middlewares.NewJWT()
+	claims, err := j.ParseToken(token)
+	global.Lg.Info("claims info", zap.Any("claims", claims))
+	if err != nil {
+		response.Err(c, 401, 401, "fail", "")
+		return
+	}
+
+	userInfo := map[string]interface{}{
+		"userId":        claims.ID,
+		"username":      claims.NickName,
+		"head_url":      claims.HeadUrl,
+		"token":         token,
+		"expirein_time": claims.StandardClaims.ExpiresAt,
+	}
+
+	response.Success(c, 200, "success", userInfo)
 
 }

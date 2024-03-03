@@ -134,13 +134,14 @@ func SendEmailValidate(em []string) (string, error) {
 }
 
 // 生成jwt的token
-func CreateToken(c *gin.Context, Id uint, NickName string, Email string) string {
+func CreateToken(c *gin.Context, Id uint, NickName string, Email string, HeadUrl string) string {
 	//生成token信息
 	j := middlewares.NewJWT()
 	claims := middlewares.CustomClaims{
 		ID:       Id,
 		NickName: NickName,
 		Email:    Email,
+		HeadUrl:  HeadUrl,
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix(),
 			// TODO 设置token过期时间
