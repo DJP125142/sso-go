@@ -7,6 +7,7 @@ import (
 )
 
 func AccountRouter(Router *gin.RouterGroup) {
+	Router.Use(middlewares.CORSMiddleware())
 	AccountRouter := Router.Group("account")
 	{
 		// 发送邮箱验证码
