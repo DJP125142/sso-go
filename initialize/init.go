@@ -49,7 +49,7 @@ func InitConfig() {
 func InitRouters() *gin.Engine {
 	Router := gin.Default()
 	// 加载自定义中间件
-	Router.Use(middlewares.GinLogger(), middlewares.GinRecovery(true))
+	Router.Use(middlewares.GinLogger(), middlewares.GinRecovery(true), middlewares.CORSMiddleware())
 	// 路由分组
 	ApiGroup := Router.Group("/v1/")
 	router.AccountRouter(ApiGroup) // 注册AccountRouter组路由
