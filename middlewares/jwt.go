@@ -40,7 +40,7 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 		if cookie.Value == "" {
-			response.Err(c, http.StatusUnauthorized, 401, "请登录", "")
+			response.Err(c, http.StatusUnauthorized, 402, "请登录", "")
 			c.Abort()
 			return
 		}
