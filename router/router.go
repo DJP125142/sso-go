@@ -18,7 +18,7 @@ func AccountRouter(Router *gin.RouterGroup) {
 		// 获取用户信息
 		AccountRouter.GET("user", middlewares.JWTAuth(), controller.UserInfo)
 		// 创建授权code
-		AccountRouter.POST("create_code", middlewares.JWTAuth(), controller.CreateCode)
+		AccountRouter.POST("create_code", controller.CreateCode)
 		// 外部客户端拿code换取token
 		AccountRouter.POST("get_token_by_code", controller.GetTokenByCode)
 	}

@@ -161,8 +161,7 @@ func HandleUserModelToMap(user *model.User) map[string]interface{} {
 
 // 获取临时授权码
 func CreateCode(c *gin.Context) {
-	cookie, _ := c.Request.Cookie("token")
-	token := cookie.Value
+	token := c.Query("token")
 	code := utils.GenerateCode()
 
 	// code存入redis，有效期1分钟
