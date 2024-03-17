@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"go.uber.org/zap"
 	"sso-go/global"
 	"sso-go/model"
 	"sso-go/utils"
@@ -32,7 +31,6 @@ func GetUserInfoByPw(username string, password string) (*model.User, bool, strin
 	} else {
 		whereMap = map[string]interface{}{"name": username}
 	}
-	global.Lg.Info("login log", zap.Any("whereMap", whereMap))
 	rows := global.DB.Limit(1).Where(whereMap).First(&user)
 	if rows.RowsAffected < 1 {
 		return &user, false, "该用户未注册"

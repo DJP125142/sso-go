@@ -26,18 +26,18 @@ func GinLogger() gin.HandlerFunc {
 		// 获取请求处理的耗时
 		cost := time.Since(start)
 		// 若response的状态码不是200为异常，记录异常信息
-		if c.Writer.Status() != 200 {
-			zap.L().Info(path,
-				zap.Int("status", c.Writer.Status()),                                 // 记录状态码
-				zap.String("method", c.Request.Method),                               // 记录请求方法
-				zap.String("path", path),                                             // 记录请求路径
-				zap.String("query", query),                                           // 记录请求参数
-				zap.String("ip", c.ClientIP()),                                       // 记录请求IP
-				zap.String("user-agent", c.Request.UserAgent()),                      // 记录请求用户代理
-				zap.String("errors", c.Errors.ByType(gin.ErrorTypePrivate).String()), // 记录异常信息
-				zap.Duration("cost", cost),                                           // 记录请求处理耗时
-			)
-		}
+		//if c.Writer.Status() != 200 {
+		zap.L().Info(path,
+			zap.Int("status", c.Writer.Status()),                                 // 记录状态码
+			zap.String("method", c.Request.Method),                               // 记录请求方法
+			zap.String("path", path),                                             // 记录请求路径
+			zap.String("query", query),                                           // 记录请求参数
+			zap.String("ip", c.ClientIP()),                                       // 记录请求IP
+			zap.String("user-agent", c.Request.UserAgent()),                      // 记录请求用户代理
+			zap.String("errors", c.Errors.ByType(gin.ErrorTypePrivate).String()), // 记录异常信息
+			zap.Duration("cost", cost),                                           // 记录请求处理耗时
+		)
+		//}
 	}
 }
 

@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"net/http"
 	"sso-go/dao"
 	"sso-go/forms"
@@ -161,7 +160,8 @@ func HandleUserModelToMap(user *model.User) map[string]interface{} {
 
 // 获取临时授权码
 func CreateCode(c *gin.Context) {
-	token := c.Query("token")
+	cookie, _ := c.Request.Cookie("token")
+	token := cookie.Value
 	code := utils.GenerateCode()
 
 	// code存入redis，有效期1分钟
@@ -181,7 +181,6 @@ func GetTokenByCode(c *gin.Context) {
 	// 校验token
 	j := middlewares.NewJWT()
 	claims, err := j.ParseToken(token)
-	global.Lg.Info("claims info", zap.Any("claims", claims))
 	if err != nil {
 		response.Err(c, 401, 401, "fail", "")
 		return
