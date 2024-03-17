@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"go.uber.org/zap"
 	"net/http"
 	"sso-go/global"
 	"sso-go/response"
+	"strings"
 	"time"
 )
 
@@ -32,21 +34,18 @@ var (
 
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 我们这里jwt鉴权取头部信息 token 登录时回返回token信息 这里前端需要把token存储到cookie或者本地localSstorage中 不过需要跟后端协商过期时间 可以约定刷新令牌或者重新登录
-		cookie, err := c.Request.Cookie("token")
-		if err != nil {
-			response.Err(c, http.StatusUnauthorized, 401, "请登录", err.Error())
+		// 从请求头中获取 Authorization 头部
+		authorization := c.GetHeader("Authorization")
+		if authorization == "" {
+			response.Err(c, http.StatusUnauthorized, 401, "请登录", "")
+			global.Lg.Info("jwt鉴权失败401：", zap.Any("error:", "没有Authorization"))
 			c.Abort()
 			return
 		}
-		if cookie.Value == "" {
-			response.Err(c, http.StatusUnauthorized, 402, "请登录", "")
-			c.Abort()
-			return
-		}
-		token := cookie.Value
-		j := NewJWT()
 		// parseToken 解析token包含的信息
+		token := ExtractTokenFromHeader(authorization)
+		fmt.Println(token)
+		j := NewJWT()
 		claims, err := j.ParseToken(token)
 		jwt.TimeFunc = time.Now
 		if err != nil {
@@ -61,12 +60,17 @@ func JWTAuth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		fmt.Println(c)
 		// gin的上下文记录claims和userId的值
 		c.Set("claims", claims)
 		c.Set("userId", claims.ID)
 		c.Next()
 	}
+}
+
+// 辅助函数：从 Authorization 头部中提取 Token
+func ExtractTokenFromHeader(authHeader string) string {
+	// Token 应该以 "Bearer " 前缀开始，因此我们可以简单地删除前缀以获取 Token
+	return strings.TrimPrefix(authHeader, "Bearer ")
 }
 
 func NewJWT() *JWT {
