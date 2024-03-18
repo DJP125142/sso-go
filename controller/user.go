@@ -181,11 +181,13 @@ func GetTokenByCode(c *gin.Context) {
 	}
 	token := global.Redis.Get(code).Val()
 
+	global.Lg.Info("GetTokenByCode", zap.Any("token_from_redis:", token))
+
 	// 校验token
 	j := middlewares.NewJWT()
 	claims, err := j.ParseToken(token)
 	if err != nil {
-		response.Err(c, 401, 401, "fail", "")
+		response.Err(c, 401, 401, "fail", err.Error())
 		return
 	}
 
