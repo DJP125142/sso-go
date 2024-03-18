@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 // 注册接口
@@ -163,6 +164,7 @@ func HandleUserModelToMap(user *model.User) map[string]interface{} {
 func CreateCode(c *gin.Context) {
 	authorization := c.GetHeader("Authorization")
 	token := middlewares.ExtractTokenFromHeader(authorization)
+	global.Lg.Info("CreateCode", zap.Any("token:", token))
 	code := utils.GenerateCode()
 
 	// code存入redis，有效期1分钟
