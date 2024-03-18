@@ -88,7 +88,7 @@ func Login(c *gin.Context) {
 
 	// 处理下默认头像
 	if user.HeadUrl == "" {
-		user.HeadUrl = "http://account.djp.org.cn/static/img/head_default.1e4f19e.png"
+		user.HeadUrl = "http://resource.djp.org.cn/images/head_default.png"
 	}
 
 	// 登录成功创建token
