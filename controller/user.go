@@ -192,7 +192,7 @@ func GetTokenByCode(c *gin.Context) {
 	}
 
 	// 验证后清除redis
-	global.Redis.Del(code)
+	// global.Redis.Del(code)
 
 	userInfo := map[string]interface{}{
 		"userId":        claims.ID,
