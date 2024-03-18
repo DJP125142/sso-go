@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"sso-go/dao"
 	"sso-go/forms"
@@ -12,6 +11,8 @@ import (
 	"sso-go/response"
 	"sso-go/utils"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 // 注册接口
@@ -129,10 +130,10 @@ func UserInfo(c *gin.Context) {
 // 发送邮箱验证码
 func SendValidateCode(c *gin.Context) {
 	email := c.Query("email")
-	if utils.IsEmail(email) {
-		response.Err(c, 401, 401, "email格式错误", "")
-		return
-	}
+	// if utils.IsEmail(email) {
+	// 	response.Err(c, 401, 401, "email格式错误", "")
+	// 	return
+	// }
 	emails := []string{email}
 	// 发送邮件
 	vCode, err := utils.SendEmailValidate(emails)
