@@ -64,10 +64,10 @@ func HandleValidatorError(c *gin.Context, err error) {
 	//如何返回错误信息
 	errs, ok := err.(validator.ValidationErrors)
 	if !ok {
-		response.Err(c, http.StatusInternalServerError, 500, "参数校验错误", err.Error())
+		response.Err(c, http.StatusOK, 500, "参数校验错误", err.Error())
 	}
 	msg := removeTopStruct(errs.Translate(global.Trans))
-	response.Err(c, http.StatusBadRequest, 400, "参数校验错误", msg)
+	response.Err(c, http.StatusOK, 400, "参数校验错误", msg)
 	return
 }
 

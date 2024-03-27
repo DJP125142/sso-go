@@ -84,7 +84,7 @@ func Login(c *gin.Context) {
 	// 查询是否有该用户
 	user, ok, msg := dao.GetUserInfoByPw(loginParams.Username, loginParams.PassWord)
 	if !ok {
-		response.Err(c, 401, 401, msg, "")
+		response.Err(c, http.StatusOK, 401, msg, "")
 		return
 	}
 
@@ -107,7 +107,7 @@ func UserInfo(c *gin.Context) {
 	claims, exists := c.Get("claims")
 	if !exists {
 		// 如果不存在，说明中间件没有设置claims
-		response.Err(c, 401, 401, "未登录", "")
+		response.Err(c, http.StatusOK, 401, "未登录", "")
 		return
 	}
 
@@ -139,7 +139,7 @@ func SendValidateCode(c *gin.Context) {
 	// 发送邮件
 	vCode, err := utils.SendEmailValidate(emails)
 	if err != nil {
-		response.Err(c, 200, 500, "验证码发送失败", err.Error())
+		response.Err(c, http.StatusOK, 500, "验证码发送失败", err.Error())
 		return
 	}
 	// 验证码存入redis，有效期5分钟
@@ -176,7 +176,7 @@ func CreateCode(c *gin.Context) {
 func GetTokenByCode(c *gin.Context) {
 	code := c.Query("code")
 	if code == "" {
-		response.Err(c, 401, 401, "code不得为空", "")
+		response.Err(c, http.StatusOK, 401, "code不得为空", "")
 		return
 	}
 	token := global.Redis.Get(code).Val()
@@ -187,7 +187,7 @@ func GetTokenByCode(c *gin.Context) {
 	j := middlewares.NewJWT()
 	claims, err := j.ParseToken(token)
 	if err != nil {
-		response.Err(c, 401, 401, "fail", err.Error())
+		response.Err(c, http.StatusOK, 401, "fail", err.Error())
 		return
 	}
 

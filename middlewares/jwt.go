@@ -37,7 +37,7 @@ func JWTAuth() gin.HandlerFunc {
 		// 从请求头中获取 Authorization 头部
 		authorization := c.GetHeader("Authorization")
 		if authorization == "" {
-			response.Err(c, http.StatusUnauthorized, 401, "请登录", "")
+			response.Err(c, http.StatusOK, 401, "请登录", "")
 			global.Lg.Info("jwt鉴权失败401：", zap.Any("error:", "没有Authorization"))
 			c.Abort()
 			return
@@ -51,12 +51,12 @@ func JWTAuth() gin.HandlerFunc {
 		if err != nil {
 			if err == TokenExpired {
 				if err == TokenExpired {
-					response.Err(c, http.StatusUnauthorized, 401, "授权已过期", "")
+					response.Err(c, http.StatusOK, 401, "授权已过期", "")
 					c.Abort()
 					return
 				}
 			}
-			response.Err(c, http.StatusUnauthorized, 401, "未登陆", "")
+			response.Err(c, http.StatusOK, 401, "未登陆", "")
 			c.Abort()
 			return
 		}
