@@ -130,11 +130,14 @@ func UserInfo(c *gin.Context) {
 
 // 发送邮箱验证码
 func SendValidateCode(c *gin.Context) {
-	email := c.Query("email")
-	// if utils.IsEmail(email) {
-	// 	response.Err(c, 401, 401, "email格式错误", "")
-	// 	return
-	// }
+	emailParams := forms.EmailParams{}
+	// 使用 c.ShouldBind 函数将请求中的参数绑定到 RegisterForm 结构体上，如果出现错误，则将错误返回给客户端
+	if err := c.ShouldBind(&emailParams); err != nil {
+		// 统一处理异常
+		utils.HandleValidatorError(c, err)
+		return
+	}
+	email := emailParams.Email
 	emails := []string{email}
 	// 发送邮件
 	vCode, err := utils.SendEmailValidate(emails)

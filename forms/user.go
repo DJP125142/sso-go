@@ -17,3 +17,7 @@ type LoginForm struct {
 	// 密码
 	PassWord string `form:"password" json:"password" binding:"required,min=6,max=20"`
 }
+
+type EmailParams struct {
+	Email string `json:"email" binding:"required,email"`
+}
