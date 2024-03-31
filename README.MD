@@ -130,5 +130,7 @@ constraint users_email_unique unique (email)
 
 #### 4、业务测后端服务验证token有效性（可选）
 这是属于业务测自己的后端鉴权服务，对于需要登录的业务请求，拿到前端的token后，如果想要验证该token是否有效，
-可以请求SSO系统的 /user 接口，返回基本用户信息则说明token合法有效。
-r.com前端自己要做一个逻辑：如果地址上带有code，拿code去请求https://sso.djp.org.cn/v1/account/get_token_by_code?code=xxxxxxxx，这个接口会返回登录态token，里头有用户基本信息，你自己存在本地cookie就行
+可以请求SSO系统的 /user 接口，返回基本用户信息则说明token合法有效。  
+
+## Q&A
+后续补充...
