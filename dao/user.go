@@ -35,7 +35,7 @@ func GetUserInfoByPw(username string, password string) (*model.User, bool, strin
 	rows := global.DB.Limit(1).Where(whereMap).First(&user)
 	global.Lg.Info("Login", zap.Any("GetUserInfoByPw", whereMap))
 	if rows.RowsAffected < 1 {
-		global.Lg.Info("Login", zap.Any("GetUserInfoByPw:noRegister", whereMap))
+		global.Lg.Info("Login", zap.Any("GetUserInfoByPw:noRegister", map[string]interface{}{"whereMap": whereMap, "rows": rows.RowsAffected}))
 		return &user, false, "该用户未注册"
 	}
 	// 校验密码
